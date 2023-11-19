@@ -18,7 +18,6 @@ export default function Home() {
 
 async function CrudShowcase() {
   const pastes = await api.paste.list.query();
-  console.log(pastes);
 
   return (
     <div className="flex  w-full flex-col items-center gap-12">

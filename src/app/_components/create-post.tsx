@@ -29,8 +29,7 @@ export function CreatePaste() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        // createPaste.mutate({ name, content });
-        console.log(content);
+        createPaste.mutate({ name, content });
       }}
       className="flex w-full flex-col gap-4 "
     >
