@@ -14,13 +14,39 @@ export const pasteRouter = createTRPCRouter({
   create: publicProcedure
     .input(z.object({ name: z.string().min(1), content: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       return ctx.db.paste.create({
         data: {
           name: input.name,
           content: input.content,
+        },
+      });
+    }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+        content: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.paste.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          content: input.content,
+        },
+      });
+    }),
+
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.paste.delete({
+        where: {
+          id: input.id,
         },
       });
     }),
@@ -36,4 +62,10 @@ export const pasteRouter = createTRPCRouter({
       orderBy: { createdAt: "desc" },
     });
   }),
+
+  getById: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(({ ctx, input }) =>
+      ctx.db.paste.findUnique({ where: { id: input.id } }),
+    ),
 });

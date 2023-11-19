@@ -7,18 +7,35 @@ import { api } from "@/trpc/react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import React from "react";
 
-export function CreatePaste() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [content, setContent] = useState("");
+interface Props {
+  name: string;
+  id: number;
+  content: string;
+}
 
-  const createPaste = api.paste.create.useMutation({
+export function PasteEditor(props: Props) {
+  const router = useRouter();
+  const [name, setName] = useState(props.name);
+  const [content, setContent] = useState(props.content);
+
+  const createPaste = api.paste.update.useMutation({
     onSuccess: () => {
       router.refresh();
-      setName("");
-      setContent("");
     },
   });
+
+  const deletePaste = api.paste.delete.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
+  const confirmDelete = () => {
+    if (confirm("Do you really want to delete this pasta?")) {
+      deletePaste.mutate({ id: props.id });
+      router.back();
+    }
+  };
 
   const onChange = React.useCallback((val: string) => {
     setContent(val);
@@ -28,7 +45,7 @@ export function CreatePaste() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPaste.mutate({ name, content });
+        createPaste.mutate({ id: props.id, name: name, content: content });
       }}
       className="flex w-full flex-col gap-4 "
     >
@@ -50,7 +67,14 @@ export function CreatePaste() {
         className="rounded-full  bg-gray-800 px-10 py-3 font-semibold transition hover:bg-gray-700"
         disabled={createPaste.isLoading}
       >
-        {createPaste.isLoading ? "Pasting..." : "Paste"}
+        {createPaste.isLoading ? "Updating..." : "Update"}
+      </button>
+      <button
+        onClick={confirmDelete}
+        className="rounded-full  bg-red-800 px-10 py-3 font-semibold transition hover:bg-red-700"
+        disabled={deletePaste.isLoading}
+      >
+        {deletePaste.isLoading ? "Deleting..." : "Delete"}
       </button>
     </form>
   );
