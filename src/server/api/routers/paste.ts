@@ -25,7 +25,7 @@ export const pasteRouter = createTRPCRouter({
   update: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         name: z.string(),
         content: z.string(),
       }),
@@ -36,13 +36,14 @@ export const pasteRouter = createTRPCRouter({
           id: input.id,
         },
         data: {
+          name: input.name,
           content: input.content,
         },
       });
     }),
 
   delete: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.paste.delete({
         where: {
@@ -64,7 +65,7 @@ export const pasteRouter = createTRPCRouter({
   }),
 
   getById: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) =>
       ctx.db.paste.findUnique({ where: { id: input.id } }),
     ),

@@ -1,6 +1,5 @@
 // import { useRouter } from "next/router";
 
-import PasteCard from "@/app/_components/PasteCard";
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 import { PasteEditor } from "./_editor";
@@ -27,13 +26,13 @@ hover:from-indigo-300 hover:via-purple-300 hover:to-indigo-300 sm:text-[5rem]
         >
           Pasta bean
         </Link>
-        <PasteLoader pasteId={parseInt(pasteId)} />
+        <PasteLoader pasteId={pasteId} />
       </div>
     </main>
   );
 }
 
-async function PasteLoader({ pasteId }: { pasteId: number }) {
+async function PasteLoader({ pasteId }: { pasteId: string }) {
   const paste = await api.paste.getById.query({ id: pasteId });
   console.log(paste);
   if (!paste) {
